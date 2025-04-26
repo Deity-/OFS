@@ -59,49 +59,37 @@ bool OFS_Waveform::LoadFlac(const std::string& output) noexcept
 
 bool OFS_Waveform::GenerateAndLoadFlac(const std::string& ffmpegPath, const std::string& videoPath, const std::string& output) noexcept
 {
-	generating = true;
+    generating = true;
 
-	std::array<const char*, 11> args =
-	{
-		ffmpegPath.c_str(),
-		"-y",
-		"-loglevel",
-		"quiet",
-		"-i", videoPath.c_str(),
-		"-vn",
-		"-ac", "1",
-		output.c_str(),
-		nullptr
-	};
-	struct subprocess_s proc;
-	if(subprocess_create(args.data(), subprocess_option_no_window, &proc) != 0) {
-		generating = false; 
-		return false; 
-	}
+    std::string command = ffmpegPath + " -y -loglevel quiet -i \"" + videoPath + "\" -vn -ac 1 \"" + output + "\"";
 
-	if(proc.stdout_file) 
-	{
-		fclose(proc.stdout_file);
-		proc.stdout_file = nullptr;
-	}
-	
-	if(proc.stderr_file) 
-	{
-		fclose(proc.stderr_file);
-		proc.stderr_file = nullptr;
-	}
+    FILE* stderr_pipe = popen(command.c_str(), "r");
+    if (!stderr_pipe) {
+        generating = false; 
+        std::cerr << "Failed to create subprocess." << std::endl;
+        return false; 
+    }
 
-	int return_code;
-	subprocess_join(&proc, &return_code);
-	subprocess_destroy(&proc);
+    char buffer[256];
+    std::string error_output;
+    while (fgets(buffer, sizeof(buffer), stderr_pipe) != nullptr) {
+        error_output += buffer;
+    }
 
-	if (!LoadFlac(output)) {
-		generating = false;
-		return false;
-	}
+    int return_code = pclose(stderr_pipe);
+    if (return_code != 0) {
+        std::cerr << "FFmpeg error: " << error_output << std::endl;
+        generating = false;
+        return false;
+    }
 
-	generating = false;
-	return true;
+    if (!LoadFlac(output)) {
+        generating = false;
+        return false;
+    }
+
+    generating = false;
+    return true;
 }
 
 void OFS_WaveformLOD::Init() noexcept
