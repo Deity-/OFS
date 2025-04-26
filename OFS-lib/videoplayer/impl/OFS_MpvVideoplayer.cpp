@@ -176,9 +176,20 @@ bool OFS_Videoplayer::Init(bool hwAccel) noexcept
     if(error != 0) {
         LOG_WARN("Failed to set mpv: config=yes");
     }
+
     error = mpv_set_option_string(CTX->mpv, "config-dir", confPath.c_str());
     if(error != 0) {
         LOGF_WARN("Failed to set mpv: config-dir=%s", confPath.c_str());
+    }
+
+    error = mpv_set_option_string(CTX->mpv, "vo", "libmpv");
+    if(error != 0) {
+        LOG_WARN("Failed to set mpv: vo=libmpv");
+    }
+    
+    error = mpv_set_option_string(CTX->mpv, "gpu-context", "cocoa");
+    if(error != 0) {
+        LOG_WARN("Failed to set mpv: gpu-context=cocoa");
     }
 
     if(mpv_initialize(CTX->mpv) != 0) {
