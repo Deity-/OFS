@@ -1,0 +1,12 @@
+diff --git a/lib/bitsery/include/bitsery/details/adapter_common.h b/lib/bitsery/include/bitsery/details/adapter_common.h
+index 9282446..5803239 100644
+--- a/lib/bitsery/include/bitsery/details/adapter_common.h
++++ b/lib/bitsery/include/bitsery/details/adapter_common.h
+@@ -30,6 +30,7 @@
+ #include <stack>
+ #include <cstring>
+ #include <climits>
++#include <cstdint>
+ #include "not_defined_type.h"
+ 
+ #include "../common.h"
