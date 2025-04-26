@@ -7,7 +7,6 @@ The project is based on OpenGL, SDL2, ImGui, libmpv, & all these other great [li
 ### How to build ( for people who want to contribute or fork )
 1. Clone the repository
 2. `cd "OpenFunscripter"`
-3. `git submodule update --init`
 4. ./build.sh
 
 Known linux dependencies to just compile are `build-essential libmpv-dev libglvnd-dev`.  
